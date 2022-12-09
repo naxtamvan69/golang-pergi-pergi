@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"net/http"
 	"os"
+	"pergipergi/controller/middleware"
 	"pergipergi/controller/rest"
 	"pergipergi/repository"
 	"pergipergi/service"
@@ -67,7 +68,10 @@ func RunServer(db *gorm.DB, mux *http.ServeMux) *http.ServeMux {
 		UserRestAPIHandler: userRestAPI,
 	}
 
-	MuxRoute(mux, "POST", "/api/v1/users/add", http.HandlerFunc(apiHandler.UserRestAPIHandler.AddUser))
+	MuxRoute(mux, "POST", "/api/v1/users/add", middleware.Post(http.HandlerFunc(apiHandler.UserRestAPIHandler.AddUser)))
+	MuxRoute(mux, "POST", "/api/v1/users/update", middleware.Put(http.HandlerFunc(apiHandler.UserRestAPIHandler.UpdateUser)), "?user_id=")
+	MuxRoute(mux, "DELETE", "/api/v1/users/delete", middleware.Delete(http.HandlerFunc(apiHandler.UserRestAPIHandler.DeleteUser)), "?user_id=")
+	MuxRoute(mux, "GET", "/api/v1/users/get-all-user", middleware.Get(http.HandlerFunc(apiHandler.UserRestAPIHandler.GetUsers)))
 
 	return mux
 }

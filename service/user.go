@@ -27,7 +27,7 @@ func NewUserService(userRepository repository.UserRepository) *userService {
 func (u *userService) AddUserService(ctx context.Context, user model.User) (model.User, error) {
 	_, err := u.userRepository.GetUserByUsername(ctx, user.Username)
 	if err == nil {
-		return model.User{}, errors.New("username already used")
+		return model.User{}, errors.New("username is already used")
 	}
 
 	pass, err := u.HashPassword(user.Password)
@@ -44,6 +44,17 @@ func (u *userService) GetUsersService(ctx context.Context) ([]model.User, error)
 }
 
 func (u *userService) UpdateUserService(ctx context.Context, user model.User) (model.User, error) {
+	userExist, err := u.userRepository.GetUserByUsername(ctx, user.Username)
+	if err == nil && user.ID != userExist.ID {
+		return model.User{}, errors.New("username is already used")
+	}
+
+	pass, err := u.HashPassword(user.Password)
+	if err != nil {
+		return model.User{}, err
+	}
+	user.Password = pass
+
 	return u.userRepository.UpdateUser(ctx, user)
 }
 
