@@ -57,7 +57,7 @@ func (t *travelAgensiRepository) GetListTravelAgensi(ctx context.Context) ([]mod
 
 func (t *travelAgensiRepository) GetTravelAgensiByID(ctx context.Context, ID int) (model.TravelAgensi, error) {
 	var travelAgensi model.TravelAgensi
-	err := t.db.WithContext(ctx).Select("*").Where("id = ?", ID).Scan(&travelAgensi).Error
+	err := t.db.WithContext(ctx).Model(&model.TravelAgensi{}).Select("*").Where("id = ?", ID).Scan(&travelAgensi).Error
 	if err != nil {
 		return model.TravelAgensi{}, err
 	}

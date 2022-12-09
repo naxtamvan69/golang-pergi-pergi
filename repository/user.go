@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"gorm.io/gorm"
 	"pergipergi/model"
 )
@@ -57,9 +58,11 @@ func (u *userRepository) DeleteUser(ctx context.Context, ID int) error {
 
 func (u *userRepository) GetUserByUsername(ctx context.Context, username string) (model.User, error) {
 	var user model.User
-	err := u.db.WithContext(ctx).Select("*").Where("username = ?", username).Scan(&user).Error
+	err := u.db.WithContext(ctx).Model(&model.User{}).Select("*").Where("username = ?", username).Scan(&user).Error
 	if err != nil {
 		return model.User{}, err
+	} else if user.ID == 0 {
+		return model.User{}, errors.New("find user by username = " + username + " not found")
 	}
 	return user, nil
 }

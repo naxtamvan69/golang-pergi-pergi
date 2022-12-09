@@ -36,3 +36,17 @@ func SetDBConnection(DB *gorm.DB) {
 func GetDBConnection() *gorm.DB {
 	return db
 }
+
+func Reset(db *gorm.DB, table string) error {
+	return db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Exec("TRUNCATE " + table).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Exec("ALTER SEQUENCE " + table + "_id_seq RESTART WITH 1").Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
