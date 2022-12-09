@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"pergipergi/model"
 	"pergipergi/repository"
@@ -24,11 +25,17 @@ func NewUserService(userRepository repository.UserRepository) *userService {
 }
 
 func (u *userService) AddUserService(ctx context.Context, user model.User) (model.User, error) {
+	_, err := u.userRepository.GetUserByUsername(ctx, user.Username)
+	if err == nil {
+		return model.User{}, errors.New("username already used")
+	}
+
 	pass, err := u.HashPassword(user.Password)
 	if err != nil {
 		return model.User{}, err
 	}
 	user.Password = pass
+
 	return u.userRepository.AddUser(ctx, user)
 }
 
