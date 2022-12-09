@@ -3,14 +3,14 @@ package model
 import "time"
 
 type Role struct {
-	ID        int       `json:"id" gorm:"primaryKey"`
-	Role      string    `json:"role" gorm:"type:varchar(50);not null;unique"`
+	ID        int       `json:"id" gorm:"primaryKey" binding:"required"`
+	Role      string    `json:"role" gorm:"type:varchar(50);not null;unique" binding:"required"`
 	UserRole  []User    `json:"user_role" gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdateAt  time.Time `json:"update_at"`
+	CreatedAt time.Time `json:"created_at" binding:"required"`
+	UpdateAt  time.Time `json:"update_at" binding:"required"`
 }
 
 type RoleRequest struct {
-	ID   int    `json:"id"`
-	Role string `json:"role"`
+	ID   int    `json:"id" binding:"required"`
+	Role string `json:"role" binding:"required"`
 }

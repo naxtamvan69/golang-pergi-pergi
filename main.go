@@ -19,6 +19,7 @@ var Resources embed.FS
 
 type RestAPIHandler struct {
 	UserRestAPIHandler rest.UserRestAPI
+	RoleRestAPIHandler rest.RoleRestAPI
 }
 
 func main() {
@@ -53,25 +54,32 @@ func main() {
 
 func RunServer(db *gorm.DB, mux *http.ServeMux) *http.ServeMux {
 	userRepo := repository.NewUserRepository(db)
-	//roleRepo := repository.NewRoleRepository(db)
+	roleRepo := repository.NewRoleRepository(db)
 	//destinasiRepo := repository.NewDestinasiRepository(db)
 	//travelAgensiRepo := repository.NewTravelAgensiRepository(db)
 
 	userService := service.NewUserService(userRepo)
-	//roleService := service.NewRoleService(roleRepo)
+	roleService := service.NewRoleService(roleRepo)
 	//destinasiService := service.NewDestinasiService(destinasiRepo)
 	//travelAgensiService := service.NewTravelAgensiService(travelAgensiRepo)
 
 	userRestAPI := rest.NewUserRestAPI(userService)
+	roleRestAPI := rest.NewRoleRestAPI(roleService)
 
 	apiHandler := RestAPIHandler{
 		UserRestAPIHandler: userRestAPI,
+		RoleRestAPIHandler: roleRestAPI,
 	}
 
 	MuxRoute(mux, "POST", "/api/v1/users/add", middleware.Post(http.HandlerFunc(apiHandler.UserRestAPIHandler.AddUser)))
 	MuxRoute(mux, "POST", "/api/v1/users/update", middleware.Put(http.HandlerFunc(apiHandler.UserRestAPIHandler.UpdateUser)), "?user_id=")
 	MuxRoute(mux, "DELETE", "/api/v1/users/delete", middleware.Delete(http.HandlerFunc(apiHandler.UserRestAPIHandler.DeleteUser)), "?user_id=")
 	MuxRoute(mux, "GET", "/api/v1/users/get-all-user", middleware.Get(http.HandlerFunc(apiHandler.UserRestAPIHandler.GetUsers)))
+
+	MuxRoute(mux, "POST", "/api/v1/roles/add", middleware.Post(http.HandlerFunc(apiHandler.RoleRestAPIHandler.AddRole)))
+	MuxRoute(mux, "POST", "/api/v1/roles/update", middleware.Put(http.HandlerFunc(apiHandler.RoleRestAPIHandler.UpdateRole)), "?role_id=")
+	MuxRoute(mux, "DELETE", "/api/v1/roles/delete", middleware.Delete(http.HandlerFunc(apiHandler.RoleRestAPIHandler.DeleteRole)), "?role_id=")
+	MuxRoute(mux, "GET", "/api/v1/roles/get-all-role", middleware.Get(http.HandlerFunc(apiHandler.RoleRestAPIHandler.GetRoles)))
 
 	return mux
 }
