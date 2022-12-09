@@ -57,7 +57,7 @@ func (d *destinasiRepository) GetDestinations(ctx context.Context) ([]model.Dest
 
 func (d *destinasiRepository) GetDestinasiByNegaraDestinasi(ctx context.Context, negara string) (model.Destinasi, error) {
 	var destinasi model.Destinasi
-	err := d.db.WithContext(ctx).Select("*").Where("negara_destinasi = ?", negara).Scan(&destinasi).Error
+	err := d.db.WithContext(ctx).Model(&model.Destinasi{}).Select("*").Where("negara_destinasi = ?", negara).Scan(&destinasi).Error
 	if err != nil {
 		return model.Destinasi{}, err
 	}

@@ -9,3 +9,8 @@ type Role struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdateAt  time.Time `json:"update_at"`
 }
+
+type RoleRequest struct {
+	ID   int    `json:"id"`
+	Role string `json:"role"`
+}
