@@ -26,10 +26,18 @@ func (r *roleService) AddRoleService(ctx context.Context, role model.Role) (mode
 }
 
 func (r *roleService) UpdateRoleService(ctx context.Context, role model.Role) (model.Role, error) {
+	_, err := r.roleRepository.GetRoleByID(ctx, role.ID)
+	if err != nil {
+		return model.Role{}, err
+	}
 	return r.roleRepository.UpdateRole(ctx, role)
 }
 
 func (r *roleService) DeleteRoleService(ctx context.Context, ID int) error {
+	_, err := r.roleRepository.GetRoleByID(ctx, ID)
+	if err != nil {
+		return err
+	}
 	return r.roleRepository.DeleteRole(ctx, ID)
 }
 
